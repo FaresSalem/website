@@ -14,7 +14,6 @@ This is *not* a guide for people who want to debug their cluster.  For that you 
 
 {{% /capture %}}
 
-{{< toc >}}
 
 {{% capture body %}}
 
@@ -32,7 +31,7 @@ your Service?
 The first step in debugging a Pod is taking a look at it.  Check the current state of the Pod and recent events with the following command:
 
 ```shell
-$ kubectl describe pods ${POD_NAME}
+kubectl describe pods ${POD_NAME}
 ```
 
 Look at the state of the containers in the pod.  Are they all `Running`?  Have there been recent restarts?
@@ -65,38 +64,8 @@ Again, the information from `kubectl describe ...` should be informative.  The m
 
 #### My pod is crashing or otherwise unhealthy
 
-First, take a look at the logs of
-the current container:
-
-```shell
-$ kubectl logs ${POD_NAME} ${CONTAINER_NAME}
-```
-
-If your container has previously crashed, you can access the previous container's crash log with:
-
-```shell
-$ kubectl logs --previous ${POD_NAME} ${CONTAINER_NAME}
-```
-
-Alternately, you can run commands inside that container with `exec`:
-
-```shell
-$ kubectl exec ${POD_NAME} -c ${CONTAINER_NAME} -- ${CMD} ${ARG1} ${ARG2} ... ${ARGN}
-```
-
-{{< note >}}
-**Note:** `-c ${CONTAINER_NAME}` is optional. You can omit it for Pods that only contain a single container.
-{{< /note >}}
-
-As an example, to look at the logs from a running Cassandra pod, you might run
-
-```shell
-$ kubectl exec cassandra -- cat /var/log/cassandra/system.log
-```
-
-If none of these approaches work, you can find the host machine that the pod is running on and SSH into that host,
-but this should generally not be necessary given tools in the Kubernetes API. Therefore, if you find yourself needing to ssh into a machine, please file a
-feature request on GitHub describing your use case and why these tools are insufficient.
+Once your pod has been scheduled, the methods described in [Debug Running Pods](
+/docs/tasks/debug-application-cluster/debug-running-pod/) are available for debugging.
 
 #### My pod is running but not doing what I told it to do
 
@@ -108,8 +77,8 @@ For example, if you misspelled `command` as `commnd` then the pod will be create
 will not use the command line you intended it to use.
 
 The first thing to do is to delete your pod and try creating it again with the `--validate` option.
-For example, run `kubectl create --validate -f mypod.yaml`.
-If you misspelled `command` as `commnd` then  will give an error like this:
+For example, run `kubectl apply --validate -f mypod.yaml`.
+If you misspelled `command` as `commnd` then will give an error like this:
 
 ```shell
 I0805 10:43:25.129850   46757 schema.go:126] unknown field: commnd
@@ -146,7 +115,7 @@ First, verify that there are endpoints for the service. For every Service object
 You can view this resource with:
 
 ```shell
-$ kubectl get endpoints ${SERVICE_NAME}
+kubectl get endpoints ${SERVICE_NAME}
 ```
 
 Make sure that the endpoints match up with the number of containers that you expect to be a member of your service.
@@ -169,7 +138,7 @@ spec:
 You can use:
 
 ```shell
-$ kubectl get pods --selector=name=nginx,type=frontend
+kubectl get pods --selector=name=nginx,type=frontend
 ```
 
 to list pods that match this selector.  Verify that the list matches the Pods that you expect to provide your Service.
@@ -178,7 +147,7 @@ If the list of pods matches expectations, but your endpoints are still empty, it
 have the right ports exposed.  If your service has a `containerPort` specified, but the Pods that are
 selected don't have that port listed, then they won't be added to the endpoints list.
 
-Verify that the pod's `containerPort` matches up with the Service's `containerPort`
+Verify that the pod's `containerPort` matches up with the Service's `targetPort`
 
 #### Network traffic is not forwarded
 

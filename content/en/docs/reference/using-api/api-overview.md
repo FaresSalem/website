@@ -1,12 +1,15 @@
 ---
 title: Kubernetes API Overview
 reviewers:
-- bgrant0607
 - erictune
 - lavalamp
 - jbeda
 content_template: templates/concept
 weight: 10
+card:
+  name: reference
+  weight: 50
+  title: Overview of API
 ---
 
 {{% capture overview %}}
@@ -40,11 +43,11 @@ The version is set at the API level rather than at the resource or field level t
 The JSON and Protobuf serialization schemas follow the same guidelines for schema changes. The following descriptions cover both formats.
 
 {{< note >}}
-**Note:** The API versioning and software versioning are indirectly related.  The [API and release
+The API versioning and software versioning are indirectly related.  The [API and release
 versioning proposal](https://git.k8s.io/community/contributors/design-proposals/release/versioning.md) describes the relationship between API versioning and software versioning.
 {{< /note >}}
 
-Different API versions indicate different levels of stability and support. You can find more information about the criteria for each level in the [API Changes documentation](https://git.k8s.io/community/contributors/devel/api_changes.md#alpha-beta-and-stable-versions).  
+Different API versions indicate different levels of stability and support. You can find more information about the criteria for each level in the [API Changes documentation](https://git.k8s.io/community/contributors/devel/sig-architecture/api_changes.md#alpha-beta-and-stable-versions).
 
 Here's a summary of each level:
 
@@ -64,7 +67,7 @@ Here's a summary of each level:
   - The software is recommended for only non-business-critical uses because of potential for incompatible changes in subsequent releases. If you have multiple clusters which can be upgraded independently, you may be able to relax this restriction.
   
  {{< note >}}
-**Note:** Try the beta features and provide feedback. After the features exit beta, it may not be practical to make more changes.
+Try the beta features and provide feedback. After the features exit beta, it may not be practical to make more changes.
  {{< /note >}}
   
 - Stable:
@@ -88,25 +91,25 @@ The two paths that support extending the API with [custom resources](/docs/conce
  - [aggregator](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/api-machinery/aggregated-api-servers.md) for a full set of Kubernetes API semantics to implement their own apiserver.
  
 
-## Enabling API groups
+## Enabling or disabling API groups
 
 Certain resources and API groups are enabled by default. You can enable or disable them by setting `--runtime-config`
 on the apiserver. `--runtime-config` accepts comma separated values. For example:
+
  - to disable batch/v1, set `--runtime-config=batch/v1=false`
  - to enable batch/v2alpha1, set `--runtime-config=batch/v2alpha1`
+
 The flag accepts comma separated set of key=value pairs describing runtime configuration of the apiserver.
 
 {{< note >}}
-**Note:** When you enable or disable groups or resources, you need to restart the apiserver and controller-manager
+When you enable or disable groups or resources, you need to restart the apiserver and controller-manager
 to pick up the `--runtime-config` changes.
 {{< /note >}}
 
-## Enabling resources in the groups
+## Enabling specific resources in the extensions/v1beta1 group
 
-DaemonSets, Deployments, HorizontalPodAutoscalers, Ingress, Jobs and ReplicaSets are enabled by default.
-You can enable other extensions resources by setting `--runtime-config` on
-apiserver. `--runtime-config` accepts comma separated values. For example, to disable deployments and jobs, set
-`--runtime-config=extensions/v1beta1/deployments=false,extensions/v1beta1/jobs=false`
-{{% /capture %}}
+DaemonSets, Deployments, StatefulSet, NetworkPolicies, PodSecurityPolicies and ReplicaSets in the `extensions/v1beta1` API group are disabled by default.
+For example: to enable deployments and daemonsets, set
+`--runtime-config=extensions/v1beta1/deployments=true,extensions/v1beta1/daemonsets=true`.
 
-
+{{< note >}}Individual resource enablement/disablement is only supported in the `extensions/v1beta1` API group for legacy reasons.{{< /note >}}

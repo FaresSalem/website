@@ -6,9 +6,9 @@ toc:
 - docs/setup/pick-right-solution.md
 
 - title: Downloading Kubernetes
-  landing_page: /docs/imported/release/notes/
+  landing_page: /docs/setup/release/notes/
   section:
-  - docs/imported/release/notes.md
+  - docs/setup/release/notes.md
   - docs/setup/building-from-source.md
 
 - title: Version 1.10 Troubleshooting
@@ -39,7 +39,7 @@ toc:
   - title: Running Kubernetes on Azure Container Service
     path: https://docs.microsoft.com/en-us/azure/container-service/container-service-kubernetes-walkthrough
   - title: Running Kubernetes on IBM Cloud Kubernetes Service
-    path: https://console.bluemix.net/docs/containers/container_index.html
+    path: https://cloud.ibm.com/docs/containers?topic=containers-getting-started
 
 - title: Turn-key Cloud Solutions
   landing_page: /docs/getting-started-guides/alibaba-cloud/
@@ -51,7 +51,6 @@ toc:
   - docs/getting-started-guides/gce.md
   - title: Running Kubernetes on IBM Cloud
     path: https://github.com/patrocinio/kubernetes-softlayer
-  - docs/getting-started-guides/stackpoint.md
 
 - title: Custom Solutions
   landing_page: /docs/getting-started-guides/coreos/index/
@@ -103,38 +102,16 @@ toc:
 
   - docs/admin/node-conformance.md
 
-- title: User Journeys
-  landing_page: /docs/home/
-  section:
-
-  - title: Application Developer
-    section:
-    - docs/user-journeys/users/application-developer/foundational.md
-    - docs/user-journeys/users/application-developer/intermediate.md
-    - docs/user-journeys/users/application-developer/advanced.md
-  - title: Cluster Operator
-    section:
-    - docs/user-journeys/users/cluster-operator/foundational.md
-    - docs/user-journeys/users/cluster-operator/intermediate.md
-
-  - title: Docs Contributor
-    path: /docs/home/?path=contributors&persona=docs-contributor&level=foundational
-  - title: Code Contributor
-    path: /docs/home/?path=contributors&persona=code-contributor&level=foundational
-  - title: Community Contributor
-    path: /docs/home/?path=contributors&persona=community-contributor&level=foundational
-
 - title: Installing Addons
   path: /docs/concepts/cluster-administration/addons/
-
-- title: Configuring Kubernetes with Salt
-  path: /docs/admin/salt/
 
 - title: Building Large Clusters
   path: /docs/admin/cluster-large/
 
 - title: Running in Multiple Zones
-  path: /docs/setup/multiple-zones/
+  path: /docs/setup/best-practices/multiple-zones/
 
 - title: Building High-Availability Clusters
   path: /docs/admin/high-availability/building/
+
+- docs/setup/version-skew-policy.md

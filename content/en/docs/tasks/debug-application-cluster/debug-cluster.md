@@ -14,7 +14,6 @@ You may also visit [troubleshooting document](/docs/troubleshooting/) for more i
 
 {{% /capture %}}
 
-{{< toc >}}
 
 {{% capture body %}}
 
@@ -30,6 +29,11 @@ kubectl get nodes
 
 And verify that all of the nodes you expect to see are present and that they are all in the `Ready` state.
 
+To get detailed information about the overall health of your cluster, you can run:
+
+```shell
+kubectl cluster-info dump
+```
 ## Looking at logs
 
 For now, digging deeper into the cluster requires logging into the relevant machines.  Here are the locations
@@ -37,28 +41,28 @@ of the relevant log files.  (note that on systemd-based systems, you may need to
 
 ### Master
 
-   * /var/log/kube-apiserver.log - API Server, responsible for serving the API
-   * /var/log/kube-scheduler.log - Scheduler, responsible for making scheduling decisions
-   * /var/log/kube-controller-manager.log - Controller that manages replication controllers
+   * `/var/log/kube-apiserver.log` - API Server, responsible for serving the API
+   * `/var/log/kube-scheduler.log` - Scheduler, responsible for making scheduling decisions
+   * `/var/log/kube-controller-manager.log` - Controller that manages replication controllers
 
 ### Worker Nodes
 
-   * /var/log/kubelet.log - Kubelet, responsible for running containers on the node
-   * /var/log/kube-proxy.log - Kube Proxy, responsible for service load balancing
+   * `/var/log/kubelet.log` - Kubelet, responsible for running containers on the node
+   * `/var/log/kube-proxy.log` - Kube Proxy, responsible for service load balancing
 
 ## A general overview of cluster failure modes
 
 This is an incomplete list of things that could go wrong, and how to adjust your cluster setup to mitigate the problems.
 
-Root causes:
+### Root causes:
 
   - VM(s) shutdown
   - Network partition within cluster, or between cluster and users
   - Crashes in Kubernetes software
   - Data loss or unavailability of persistent storage (e.g. GCE PD or AWS EBS volume)
-  - Operator error, e.g. misconfigured Kubernetes software or application software
+  - Operator error, for example misconfigured Kubernetes software or application software
 
-Specific scenarios:
+### Specific scenarios:
 
   - Apiserver VM shutdown or apiserver crashing
     - Results
@@ -92,7 +96,7 @@ Specific scenarios:
       - users unable to read API
       - etc.
 
-Mitigations:
+### Mitigations:
 
 - Action: Use IaaS provider's automatic VM restarting feature for IaaS VMs
   - Mitigates: Apiserver VM shutdown or apiserver crashing
@@ -101,11 +105,11 @@ Mitigations:
 - Action: Use IaaS providers reliable storage (e.g. GCE PD or AWS EBS volume) for VMs with apiserver+etcd
   - Mitigates: Apiserver backing storage lost
 
-- Action: Use (experimental) [high-availability](/docs/admin/high-availability) configuration
-  - Mitigates: Master VM shutdown or master components (scheduler, API server, controller-managing) crashing
+- Action: Use [high-availability](/docs/admin/high-availability) configuration
+  - Mitigates: Control plane node shutdown or control plane components (scheduler, API server, controller-manager) crashing
     - Will tolerate one or more simultaneous node or component failures
-  - Mitigates: Apiserver backing storage (i.e., etcd's data directory) lost
-    - Assuming you used clustered etcd.
+  - Mitigates: API server backing storage (i.e., etcd's data directory) lost
+    - Assumes HA (highly-available) etcd configuration
 
 - Action: Snapshot apiserver PDs/EBS-volumes periodically
   - Mitigates: Apiserver backing storage lost
@@ -119,8 +123,5 @@ Mitigations:
 - Action: applications (containers) designed to tolerate unexpected restarts
   - Mitigates: Node shutdown
   - Mitigates: Kubelet software fault
-
-- Action: [Multiple independent clusters](/docs/concepts/cluster-administration/federation/) (and avoid making risky changes to all clusters at once)
-  - Mitigates: Everything listed above.
 
 {{% /capture %}}

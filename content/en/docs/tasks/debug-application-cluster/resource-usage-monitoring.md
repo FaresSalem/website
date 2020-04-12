@@ -18,81 +18,41 @@ where bottlenecks can be removed to improve overall performance.
 
 {{% /capture %}}
 
-{{< toc >}}
-
 {{% capture body %}}
 
-In Kubernetes, application monitoring does not depend on a single monitoring
-solution. On new clusters, you can use two separate pipelines to collect
-monitoring statistics by default:
-
-- The [**resource metrics pipeline**](#resource-metrics-pipeline) provides a limited set of metrics related
-  to cluster components such as the HorizontalPodAutoscaler controller, as well
-  as the `kubectl top` utility. These metrics are collected by
-  [metrics-server](https://github.com/kubernetes-incubator/metrics-server)
-  and are exposed via the `metrics.k8s.io` API. `metrics-server` discovers
-  all nodes on the cluster and queries each node's [Kubelet](/docs/admin/kubelet)
-  for CPU and memory usage. The Kubelet fetches the data from
-  [cAdvisor](https://github.com/google/cadvisor). `metrics-server` is a
-  lightweight short-term in-memory store.
-  
-- A [**full metrics pipeline**](#full-metrics-pipelines), such as Prometheus, gives you access to richer
-  metrics. In addition, Kubernetes can respond to these metrics by automatically
-  scaling or adapting the cluster based on its current state, using mechanisms
-  such as the Horizontal Pod Autoscaler. The monitoring pipeline fetches
-  metrics from the Kubelet, and then exposes them to Kubernetes via an adapter
-  by implementing either the `custom.metrics.k8s.io` or
-  `external.metrics.k8s.io` API.
+In Kubernetes, application monitoring does not depend on a single monitoring solution. On new clusters, you can use [resource metrics](#resource-metrics-pipeline) or [full metrics](#full-metrics-pipeline) pipelines to collect monitoring statistics.
 
 ## Resource metrics pipeline
 
-### Kubelet
+The resource metrics pipeline provides a limited set of metrics related to
+cluster components such as the [Horizontal Pod Autoscaler](/docs/tasks/run-application/horizontal-pod-autoscale) controller, as well as the `kubectl top` utility.
+These  metrics are collected by the lightweight, short-term, in-memory 
+[metrics-server](https://github.com/kubernetes-incubator/metrics-server) and
+ are exposed via the `metrics.k8s.io` API. 
 
-The Kubelet acts as a bridge between the Kubernetes master and the nodes. It manages the pods and containers running on a machine. Kubelet translates each pod into its constituent containers and fetches individual container usage statistics from cAdvisor. It then exposes the aggregated pod resource usage statistics via a REST API.
+metrics-server discovers all nodes on the cluster and 
+queries each node's 
+[kubelet](/docs/reference/command-line-tools-reference/kubelet) for CPU and 
+memory usage. The kubelet acts as a bridge between the Kubernetes master and 
+the nodes, managing the pods and containers running on a machine. The kubelet 
+translates each pod into its constituent containers and fetches individual 
+container usage statistics from the container runtime through the container 
+runtime interface. The kubelet fetches this information from the integrated 
+cAdvisor for the legacy Docker integration.  It then exposes the aggregated pod 
+resource usage statistics through the metrics-server Resource Metrics API.
+This API is served at `/metrics/resource/v1beta1` on the kubelet's authenticated and 
+read-only ports. 
 
-### cAdvisor
+## Full metrics pipeline
 
-cAdvisor is an open source container resource usage and performance analysis agent. It is purpose-built for containers and supports Docker containers natively. In Kubernetes, cAdvisor is integrated into the Kubelet binary. cAdvisor auto-discovers all containers in the machine and collects CPU, memory, filesystem, and network usage statistics. cAdvisor also provides the overall machine usage by analyzing the 'root' container on the machine.
+A full metrics pipeline gives you access to richer metrics. Kubernetes can
+respond to these metrics by  automatically scaling or adapting the cluster
+based on its current state, using mechanisms such as the Horizontal Pod
+Autoscaler. The monitoring pipeline fetches metrics from the kubelet and
+then exposes them to Kubernetes via an adapter by implementing either the
+`custom.metrics.k8s.io` or `external.metrics.k8s.io` API. 
 
-On most Kubernetes clusters, cAdvisor exposes a simple UI for on-machine containers on port 4194. Here is a snapshot of part of cAdvisor's UI that shows the overall machine usage:
-
-![cAdvisor](/images/docs/cadvisor.png)
-
-## Full metrics pipelines
-
-Many full metrics solutions exist for Kubernetes.
-
-### Prometheus
-
-[Prometheus](https://prometheus.io) can natively monitor kubernetes, nodes, and prometheus itself.
-The [Prometheus Operator](https://coreos.com/operators/prometheus/docs/latest/)
-simplifies Prometheus setup on Kubernetes, and allows you to serve the
-custom metrics API using the
-[Prometheus adapter](https://github.com/directxman12/k8s-prometheus-adapter).
-Prometheus provides a robust query language and a built-in dashboard for
-querying and visualizing your data. Prometheus is also a supported
-data source for [Grafana](https://prometheus.io/docs/visualization/grafana/).
-
-### Google Cloud Monitoring
-
-Google Cloud Monitoring is a hosted monitoring service you can use to
-visualize and alert on important metrics in your application. can collect
-metrics from Kubernetes, and you can access them
-using the [Cloud Monitoring Console](https://app.google.stackdriver.com/).
-You can create and customize dashboards to visualize the data gathered
-from your Kubernetes cluster.
-
-This video shows how to configure and run a Google Cloud Monitoring backed Heapster:
-
-[![how to setup and run a Google Cloud Monitoring backed Heapster](https://img.youtube.com/vi/xSMNR2fcoLs/0.jpg)](https://www.youtube.com/watch?v=xSMNR2fcoLs)
-
-
-{{< figure src="/images/docs/gcm.png" alt="Google Cloud Monitoring dashboard example" title="Google Cloud Monitoring dashboard example" caption="This dashboard shows cluster-wide resource usage." >}}
-
-### Dynatrace Kubernetes monitoring
-
-With [Dynatrace Kubernetes monitoring](https://www.dynatrace.com/technologies/cloud-and-microservices/kubernetes-monitoring/), you can monitor application and cluster health in highly-dynamic Kubernetes environments. 
-
-Dynatrace automatically discovers all containers running on Kubernetes and presents you with a real-time view of all the connections between your containerized processes, hosts, and cloud instances. Dynatrace includes root cause analysis and the ability to replay problems to see how they evolved over time.
+[Prometheus](https://prometheus.io), a CNCF project, can natively monitor Kubernetes, nodes, and Prometheus itself.
+Full metrics pipeline projects that are not part of the CNCF are outside the scope of Kubernetes documentation.  
 
 {{% /capture %}}

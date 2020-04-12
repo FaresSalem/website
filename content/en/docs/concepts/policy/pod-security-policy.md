@@ -16,14 +16,13 @@ updates.
 
 {{% /capture %}}
 
-{{< toc >}}
 
 {{% capture body %}}
 
 ## What is a Pod Security Policy?
 
 A _Pod Security Policy_ is a cluster-level resource that controls security
-sensitive aspects of the pod specification. The `PodSecurityPolicy` objects
+sensitive aspects of the pod specification. The [PodSecurityPolicy](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#podsecuritypolicy-v1beta1-policy) objects
 define a set of conditions that a pod must run with in order to be accepted into
 the system, as well as defaults for the related fields. They allow an
 administrator to control the following:
@@ -35,16 +34,17 @@ administrator to control the following:
 | Usage of host networking and ports                  | [`hostNetwork`, `hostPorts`](#host-namespaces) |
 | Usage of volume types                               | [`volumes`](#volumes-and-file-systems)      |
 | Usage of the host filesystem                        | [`allowedHostPaths`](#volumes-and-file-systems) |
-| White list of Flexvolume drivers                    | [`allowedFlexVolumes`](#flexvolume-drivers) |
+| White list of FlexVolume drivers                    | [`allowedFlexVolumes`](#flexvolume-drivers) |
 | Allocating an FSGroup that owns the pod's volumes   | [`fsGroup`](#volumes-and-file-systems)      |
 | Requiring the use of a read only root file system   | [`readOnlyRootFilesystem`](#volumes-and-file-systems) |
-| The user and group IDs of the container             | [`runAsUser`, `supplementalGroups`](#users-and-groups) |
+| The user and group IDs of the container             | [`runAsUser`, `runAsGroup`, `supplementalGroups`](#users-and-groups) |
 | Restricting escalation to root privileges           | [`allowPrivilegeEscalation`, `defaultAllowPrivilegeEscalation`](#privilege-escalation) |
 | Linux capabilities                                  | [`defaultAddCapabilities`, `requiredDropCapabilities`, `allowedCapabilities`](#capabilities) |
 | The SELinux context of the container                | [`seLinux`](#selinux)                       |
+| The Allowed Proc Mount types for the container      | [`allowedProcMountTypes`](#allowedprocmounttypes) |
 | The AppArmor profile used by containers             | [annotations](#apparmor)                    |
 | The seccomp profile used by containers              | [annotations](#seccomp)                     |
-| The sysctl profile used by containers               | [annotations](#sysctl)                      |
+| The sysctl profile used by containers               | [`forbiddenSysctls`,`allowedUnsafeSysctls`](#sysctl)                      |
 
 
 ## Enabling Pod Security Policies
@@ -74,7 +74,7 @@ typically created indirectly as part of a
 [Deployment](/docs/concepts/workloads/controllers/deployment/),
 [ReplicaSet](/docs/concepts/workloads/controllers/replicaset/), or other
 templated controller via the controller manager. Granting the controller access
-to the policy would grant access for *all* pods created by that the controller,
+to the policy would grant access for *all* pods created by that controller,
 so the preferred method for authorizing policies is to grant access to the
 pod's service account (see [example](#run-another-pod)).
 
@@ -87,8 +87,8 @@ First, a `Role` or `ClusterRole` needs to grant access to `use` the desired
 policies. The rules to grant access look like this:
 
 ```yaml
-kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
 metadata:
   name: <role name>
 rules:
@@ -102,8 +102,8 @@ rules:
 Then the `(Cluster)Role` is bound to the authorized user(s):
 
 ```yaml
-kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
 metadata:
   name: <binding name>
 roleRef:
@@ -144,7 +144,7 @@ For a complete example of authorizing a PodSecurityPolicy, see
 ### Troubleshooting
 
 - The [Controller Manager](/docs/admin/kube-controller-manager/) must be run
-against [the secured API port](/docs/reference/access-authn-authz/controlling-access/), 
+against [the secured API port](/docs/reference/access-authn-authz/controlling-access/),
 and must not have superuser permissions. Otherwise requests would bypass
 authentication and authorization modules, all PodSecurityPolicy objects would be
 allowed, and users would be able to create privileged containers. For more details
@@ -156,14 +156,18 @@ Roles](/docs/reference/access-authn-authz/rbac/#controller-roles).
 In addition to restricting pod creation and update, pod security policies can
 also be used to provide default values for many of the fields that it
 controls. When multiple policies are available, the pod security policy
-controller selects policies in the following order:
+controller selects policies according to the following criteria:
 
-1. If any policies successfully validate the pod without altering it, they are
-   used.
-2. If it is a pod creation request, then the first valid policy in alphabetical
-   order is used.
-3. Otherwise, if it is a pod update request, an error is returned, because pod mutations
-   are disallowed during update operations.
+1. PodSecurityPolicies which allow the pod as-is, without changing defaults or
+   mutating the pod, are preferred.  The order of these non-mutating
+   PodSecurityPolicies doesn't matter.
+2. If the pod must be defaulted or mutated, the first PodSecurityPolicy
+   (ordered by name) to allow the pod is selected.
+
+{{< note >}}
+During update operations (during which mutations to pod specs are disallowed)
+only non-mutating PodSecurityPolicies are used to validate the pod.
+{{< /note >}}
 
 ## Example
 
@@ -193,6 +197,8 @@ alias kubectl-user='kubectl --as=system:serviceaccount:psp-example:fake-user -n 
 
 Define the example PodSecurityPolicy object in a file. This is a policy that
 simply prevents the creation of privileged pods.
+The name of a PodSecurityPolicy object must be a valid
+[DNS subdomain name](/docs/concepts/overview/working-with-objects/names#dns-subdomain-names).
 
 {{< codenew file="policy/example-psp.yaml" >}}
 
@@ -230,8 +236,8 @@ Create the rolebinding to grant `fake-user` the `use` verb on the example
 policy:
 
 {{< note >}}
-**Note:** _This is not the recommended way! See the [next section](#run-another-pod)
-for the preferred approach._
+This is not the recommended way! See the [next section](#run-another-pod)
+for the preferred approach.
 {{< /note >}}
 
 ```shell
@@ -336,7 +342,6 @@ pause-7774d79b5-qrgcb   0/1       Pending   0         1s
 pause-7774d79b5-qrgcb   0/1       Pending   0         1s
 pause-7774d79b5-qrgcb   0/1       ContainerCreating   0         1s
 pause-7774d79b5-qrgcb   1/1       Running   0         2s
-^C
 ```
 
 ### Clean up
@@ -358,7 +363,7 @@ podsecuritypolicy "example" deleted
 
 ### Example Policies
 
-This is the least restricted policy you can create, equivalent to not using the
+This is the least restrictive policy you can create, equivalent to not using the
 pod security policy admission controller:
 
 {{< codenew file="policy/privileged-psp.yaml" >}}
@@ -374,7 +379,7 @@ several security mechanisms.
 ### Privileged
 
 **Privileged** - determines if any container in a pod can enable privileged mode.
-By default a container is not allowed to access any devices on the host, but a 
+By default a container is not allowed to access any devices on the host, but a
 "privileged" container is given access to all devices on the host. This allows
 the container nearly all the same access as processes running on the host.
 This is useful for containers that want to use linux capabilities like
@@ -398,8 +403,6 @@ pods on the same node.
 network namespace. Defined as a list of `HostPortRange`, with `min`(inclusive)
 and `max`(inclusive). Defaults to no allowed host ports.
 
-**AllowedHostPaths** - See [Volumes and file systems](#volumes-and-file-systems).
-
 ### Volumes and file systems
 
 **Volumes** - Provides a whitelist of allowed volume types. The allowable values
@@ -417,10 +420,20 @@ The **recommended minimum set** of allowed volumes for new PSPs are:
 - secret
 - projected
 
+{{< warning >}}
+PodSecurityPolicy does not limit the types of `PersistentVolume` objects that
+may be referenced by a `PersistentVolumeClaim`, and hostPath type
+`PersistentVolumes` do not support read-only access mode. Only trusted users
+should be granted permission to create `PersistentVolume` objects.
+{{< /warning >}}
+
 **FSGroup** - Controls the supplemental group applied to some volumes.
 
 - *MustRunAs* - Requires at least one `range` to be specified. Uses the
 minimum value of the first range as the default. Validates against all ranges.
+- *MayRunAs* - Requires at least one `range` to be specified. Allows
+`FSGroups` to be left unset without providing a default. Validates against
+all ranges if `FSGroups` is set.
 - *RunAsAny* - No default provided. Allows any `fsGroup` ID to be specified.
 
 **AllowedHostPaths** - This specifies a whitelist of host paths that are allowed
@@ -439,11 +452,11 @@ allowedHostPaths:
     readOnly: true # only allow read-only mounts
 ```
 
-{{< warning >}}**Warning:** There are many ways a container with unrestricted access to the host 
+{{< warning >}}There are many ways a container with unrestricted access to the host
 filesystem can escalate privileges, including reading data from other
 containers, and abusing the credentials of system services, such as Kubelet.
 
-Writeable hostPath directory volumes allow containers to write 
+Writeable hostPath directory volumes allow containers to write
 to the filesystem in ways that let them traverse the host filesystem outside the `pathPrefix`.
 `readOnly: true`, available in Kubernetes 1.11+, must be used on **all** `allowedHostPaths`
 to effectively limit access to the specified `pathPrefix`.
@@ -452,17 +465,17 @@ to effectively limit access to the specified `pathPrefix`.
 **ReadOnlyRootFilesystem** - Requires that containers must run with a read-only
 root filesystem (i.e. no writable layer).
 
-### Flexvolume drivers
+### FlexVolume drivers
 
-This specifies a whiltelist of Flexvolume drivers that are allowed to be used
+This specifies a whitelist of FlexVolume drivers that are allowed to be used
 by flexvolume. An empty list or nil means there is no restriction on the drivers.
-Please make sure [`volumes`](#volumes-and-file-systems) field  contains the
-`flexVolume` volume type; no Flexvolume driver is allowed otherwise.
+Please make sure [`volumes`](#volumes-and-file-systems) field contains the
+`flexVolume` volume type; no FlexVolume driver is allowed otherwise.
 
 For example:
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: allow-flex-volumes
@@ -470,27 +483,41 @@ spec:
   # ... other spec fields
   volumes:
     - flexVolume
-  allowedFlexVolumes: 
+  allowedFlexVolumes:
     - driver: example/lvm
     - driver: example/cifs
 ```
 
 ### Users and groups
 
-**RunAsUser** - Controls the what user ID containers run as.
+**RunAsUser** - Controls which user ID the containers are run with.
 
 - *MustRunAs* - Requires at least one `range` to be specified. Uses the
 minimum value of the first range as the default. Validates against all ranges.
 - *MustRunAsNonRoot* - Requires that the pod be submitted with a non-zero
 `runAsUser` or have the `USER` directive defined (using a numeric UID) in the
-image. No default provided. Setting `allowPrivilegeEscalation=false` is strongly
-recommended with this strategy.
+image. Pods which have specified neither `runAsNonRoot` nor `runAsUser` settings
+will be mutated to set `runAsNonRoot=true`, thus requiring a defined non-zero 
+numeric `USER` directive in the container. No default provided. Setting 
+`allowPrivilegeEscalation=false` is strongly recommended with this strategy.
 - *RunAsAny* - No default provided. Allows any `runAsUser` to be specified.
+
+**RunAsGroup** - Controls which primary group ID the containers are run with.
+
+- *MustRunAs* - Requires at least one `range` to be specified. Uses the
+minimum value of the first range as the default. Validates against all ranges.
+- *MayRunAs* - Does not require that RunAsGroup be specified. However, when RunAsGroup
+is specified, they have to fall in the defined range.
+- *RunAsAny* - No default provided. Allows any `runAsGroup` to be specified.
+
 
 **SupplementalGroups** - Controls which group IDs containers add.
 
 - *MustRunAs* - Requires at least one `range` to be specified. Uses the
 minimum value of the first range as the default. Validates against all ranges.
+- *MayRunAs* - Requires at least one `range` to be specified. Allows
+`supplementalGroups` to be left unset without providing a default.
+Validates against all ranges if `supplementalGroups` is set.
 - *RunAsAny* - No default provided. Allows any `supplementalGroups` to be
 specified.
 
@@ -548,6 +575,21 @@ for the default list of capabilities when using the Docker runtime.
 - *RunAsAny* - No default provided. Allows any `seLinuxOptions` to be
 specified.
 
+### AllowedProcMountTypes
+
+`allowedProcMountTypes` is a whitelist of allowed ProcMountTypes.
+Empty or nil indicates that only the `DefaultProcMountType` may be used.
+
+`DefaultProcMount` uses the container runtime defaults for readonly and masked
+paths for /proc.  Most container runtimes mask certain paths in /proc to avoid
+accidental security exposure of special devices or information. This is denoted
+as the string `Default`.
+
+The only other ProcMountType is `UnmaskedProcMount`, which bypasses the
+default masking behavior of the container runtime and ensures the newly
+created /proc the container stays intact with no modifications. This is
+denoted as the string `Unmasked`.
+
 ### AppArmor
 
 Controlled via annotations on the PodSecurityPolicy. Refer to the [AppArmor
@@ -564,7 +606,9 @@ are:
 
 - `unconfined` - Seccomp is not applied to the container processes (this is the
   default in Kubernetes), if no alternative is provided.
-- `docker/default` - The Docker default seccomp profile is used.
+- `runtime/default` - The default container runtime profile is used.
+- `docker/default` - The Docker default seccomp profile is used. Deprecated as of
+  Kubernetes 1.11. Use `runtime/default` instead.
 - `localhost/<path>` - Specify a profile as a file on the node located at
   `<seccomp_root>/<path>`, where `<seccomp_root>` is defined via the
   `--seccomp-profile-root` flag on the Kubelet.
@@ -577,7 +621,18 @@ default cannot be changed.
 
 ### Sysctl
 
-Controlled via annotations on the PodSecurityPolicy. Refer to the [Sysctl documentation](
-/docs/concepts/cluster-administration/sysctl-cluster/#podsecuritypolicy-annotations).
+By default, all safe sysctls are allowed. 
+
+- `forbiddenSysctls` - excludes specific sysctls. You can forbid a combination of safe and unsafe sysctls in the list. To forbid setting any sysctls, use `*` on its own.
+- `allowedUnsafeSysctls` - allows specific sysctls that had been disallowed by the default list, so long as these are not listed in `forbiddenSysctls`.
+
+Refer to the [Sysctl documentation](
+/docs/concepts/cluster-administration/sysctl-cluster/#podsecuritypolicy).
+
+{{% /capture %}}
+
+{{% capture whatsnext %}}
+
+Refer to [Pod Security Policy Reference](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#podsecuritypolicy-v1beta1-policy) for the api details.
 
 {{% /capture %}}

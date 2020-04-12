@@ -1,6 +1,7 @@
 ---
 reviewers:
 - danwent
+- aanm
 title: Use Cilium for NetworkPolicy
 content_template: templates/task
 weight: 20
@@ -9,7 +10,7 @@ weight: 20
 {{% capture overview %}}
 This page shows how to use Cilium for NetworkPolicy.
 
-For background on Cilium, read the [Introduction to Cilium](https://cilium.readthedocs.io/en/latest/intro).
+For background on Cilium, read the [Introduction to Cilium](https://docs.cilium.io/en/stable/intro).
 {{% /capture %}}
 
 {{% capture prerequisites %}}
@@ -22,21 +23,45 @@ For background on Cilium, read the [Introduction to Cilium](https://cilium.readt
 ## Deploying Cilium on Minikube for Basic Testing
 
 To get familiar with Cilium easily you can follow the
-[Cilium Kubernetes Getting Started Guide](https://docs.cilium.io/en/latest/gettingstarted/minikube/)
+[Cilium Kubernetes Getting Started Guide](https://docs.cilium.io/en/stable/gettingstarted/minikube/)
 to perform a basic DaemonSet installation of Cilium in minikube.
 
-Installation in a minikube setup uses a simple ''all-in-one'' YAML
-file that includes DaemonSet configurations for Cilium, to connect
-to the minikube's etcd instance as well as appropriate RBAC settings:
+To start minikube, minimal version required is >= v1.3.1, run the with the
+following arguments:
 
 ```shell
-$ kubectl create -f https://raw.githubusercontent.com/cilium/cilium/master/examples/kubernetes/cilium.yaml
-configmap "cilium-config" created
-secret "cilium-etcd-secrets" created
-serviceaccount "cilium" created
-clusterrolebinding "cilium" created
-daemonset "cilium" created
-clusterrole "cilium" created
+minikube version
+```
+```
+minikube version: v1.3.1
+```
+
+```shell
+minikube start --network-plugin=cni --memory=4096
+```
+
+Mount the BPF filesystem:
+
+```shell
+minikube ssh -- sudo mount bpffs -t bpf /sys/fs/bpf
+```
+
+For minikube you can deploy this simple ''all-in-one'' YAML file that includes
+DaemonSet configurations for Cilium as well as appropriate RBAC settings:
+
+```shell
+kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.6/install/kubernetes/quick-install.yaml
+```
+```
+configmap/cilium-config created
+serviceaccount/cilium created
+serviceaccount/cilium-operator created
+clusterrole.rbac.authorization.k8s.io/cilium created
+clusterrole.rbac.authorization.k8s.io/cilium-operator created
+clusterrolebinding.rbac.authorization.k8s.io/cilium created
+clusterrolebinding.rbac.authorization.k8s.io/cilium-operator created
+daemonset.apps/cilium create
+deployment.apps/cilium-operator created
 ```
 
 The remainder of the Getting Started Guide explains how to enforce both L3/L4
@@ -46,7 +71,7 @@ policies using an example application.
 ## Deploying Cilium for Production Use
 
 For detailed instructions around deploying Cilium for production, see:
-[Cilium Kubernetes Installation Guide](https://cilium.readthedocs.io/en/latest/kubernetes/install/)
+[Cilium Kubernetes Installation Guide](https://docs.cilium.io/en/stable/kubernetes/intro/)
 This documentation includes detailed requirements, instructions and example
 production DaemonSet files.
 
@@ -65,21 +90,13 @@ kubectl get pods --namespace=kube-system
 You'll see a list of Pods similar to this:
 
 ```console
-NAME            DESIRED   CURRENT   READY     NODE-SELECTOR   AGE
-cilium          1         1         1         <none>          2m
+NAME            READY   STATUS    RESTARTS   AGE
+cilium-6rxbd    1/1     Running   0          1m
 ...
 ```
 
-There are two main components to be aware of:
-
-- One `cilium` Pod runs on each node in your cluster and enforces network policy
+A `cilium` Pod runs on each node in your cluster and enforces network policy
 on the traffic to/from Pods on that node using Linux BPF.
-- For production deployments, Cilium should leverage the key-value store cluster
-(e.g., etcd) used by Kubernetes, which typically runs on the Kubernetes master nodes.
-The [Cilium Kubernetes Installation Guide](https://cilium.readthedocs.io/en/latest/kubernetes/install/)
-includes an example DaemonSet which can be customized to point to this key-value
-store cluster. The simple ''all-in-one'' DaemonSet for minikube requires no such
-configuration because it automatically connects to the minikube's etcd instance.
 
 {{% /capture %}}
 

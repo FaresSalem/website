@@ -53,11 +53,11 @@ for a secure solution.
 
 1. Deploy the PV and PVC of the YAML file:
 
-        kubectl create -f https://k8s.io/examples/application/mysql/mysql-pv.yaml
+        kubectl apply -f https://k8s.io/examples/application/mysql/mysql-pv.yaml
 
 1. Deploy the contents of the YAML file:
 
-        kubectl create -f https://k8s.io/examples/application/mysql/mysql-deployment.yaml
+        kubectl apply -f https://k8s.io/examples/application/mysql/mysql-deployment.yaml
 
 1. Display information about the Deployment:
 
@@ -187,7 +187,7 @@ underlying resource upon deleting the PersistentVolume.
 
 * Learn more about [Deployment objects](/docs/concepts/workloads/controllers/deployment/).
 
-* Learn more about [Deploying applications](/docs/user-guide/deploying-applications/)
+* Learn more about [Deploying applications](/docs/tasks/run-application/run-stateless-application-deployment/)
 
 * [kubectl run documentation](/docs/reference/generated/kubectl/kubectl-commands/#run)
 

@@ -2,6 +2,9 @@
 title: Configure Access to Multiple Clusters
 content_template: templates/task
 weight: 30
+card:
+  name: tasks
+  weight: 40
 ---
 
 
@@ -13,20 +16,12 @@ one or more configuration files, you can quickly switch between clusters by usin
 `kubectl config use-context` command.
 
 {{< note >}}
-**Note:** A file that is used to configure access to a cluster is sometimes called
+A file that is used to configure access to a cluster is sometimes called
 a *kubeconfig file*. This is a generic way of referring to configuration files.
 It does not mean that there is a file named `kubeconfig`.
 {{< /note >}}
 
 {{% /capture %}}
-
-{{% capture prerequisites %}}
-
-You need to have the [`kubectl`](/docs/tasks/tools/install-kubectl/) command-line tool installed.
-
-{{% /capture %}}
-
-{{< toc >}}
 
 {{% capture prerequisites %}}
 
@@ -90,6 +85,12 @@ kubectl config --kubeconfig=config-demo set-credentials developer --client-certi
 kubectl config --kubeconfig=config-demo set-credentials experimenter --username=exp --password=some-password
 ```
 
+{{< note >}}
+- To delete a user you can run `kubectl --kubeconfig=config-demo config unset users.<name>`
+- To remove a cluster, you can run `kubectl --kubeconfig=config-demo config unset clusters.<name>`
+- To remove a context, you can run `kubectl --kubeconfig=config-demo config unset contexts.<name>`
+{{< /note >}}
+
 Add context details to your configuration file:
 
 ```shell
@@ -148,9 +149,17 @@ users:
     username: exp
 ```
 
+The `fake-ca-file`, `fake-cert-file` and `fake-key-file` above are the placeholders
+for the pathnames of the certificate files. You need change these to the actual pathnames
+of certificate files in your environment.
+
+Sometimes you may want to use Base64-encoded data embedded here instead of separate
+certificate files; in that case you need add the suffix `-data` to the keys, for example,
+`certificate-authority-data`, `client-certificate-data`, `client-key-data`.
+
 Each context is a triple (cluster, user, namespace). For example, the
-`dev-frontend` context says, Use the credentials of the `developer`
-user to access the `frontend` namespace of the `development` cluster.
+`dev-frontend` context says, "Use the credentials of the `developer`
+user to access the `frontend` namespace of the `development` cluster".
 
 Set the current context:
 
@@ -251,21 +260,30 @@ The preceding configuration file defines a new context named `dev-ramp-up`.
 
 See whether you have an environment variable named `KUBECONFIG`. If so, save the
 current value of your `KUBECONFIG` environment variable, so you can restore it later.
-For example, on Linux:
+For example:
 
+### Linux
 ```shell
-export  KUBECONFIG_SAVED=$KUBECONFIG
+export KUBECONFIG_SAVED=$KUBECONFIG
 ```
-
+### Windows PowerShell
+```shell
+$Env:KUBECONFIG_SAVED=$ENV:KUBECONFIG
+```
  The `KUBECONFIG` environment variable is a list of paths to configuration files. The list is
 colon-delimited for Linux and Mac, and semicolon-delimited for Windows. If you have
 a `KUBECONFIG` environment variable, familiarize yourself with the configuration files
 in the list.
 
-Temporarily append two paths to your `KUBECONFIG` environment variable. For example, on Linux:
+Temporarily append two paths to your `KUBECONFIG` environment variable. For example:
 
+### Linux
 ```shell
-export  KUBECONFIG=$KUBECONFIG:config-demo:config-demo-2
+export KUBECONFIG=$KUBECONFIG:config-demo:config-demo-2
+```
+### Windows PowerShell
+```shell
+$Env:KUBECONFIG=("config-demo;config-demo-2")
 ```
 
 In your `config-exercise` directory, enter this command:
@@ -320,10 +338,15 @@ familiarize yourself with the contents of these files.
 
 If you have a `$HOME/.kube/config` file, and it's not already listed in your
 `KUBECONFIG` environment variable, append it to your `KUBECONFIG` environment variable now.
-For example, on Linux:
+For example:
 
+### Linux
 ```shell
 export KUBECONFIG=$KUBECONFIG:$HOME/.kube/config
+```
+### Windows Powershell
+```shell
+$Env:KUBECONFIG=($Env:KUBECONFIG;$HOME/.kube/config)
 ```
 
 View configuration information merged from all the files that are now listed
@@ -335,10 +358,15 @@ kubectl config view
 
 ## Clean up
 
-Return your `KUBECONFIG` environment variable to its original value. For example, on Linux:
+Return your `KUBECONFIG` environment variable to its original value. For example:<br>
 
+### Linux
 ```shell
 export KUBECONFIG=$KUBECONFIG_SAVED
+```
+### Windows PowerShell
+```shell
+$Env:KUBECONFIG=$ENV:KUBECONFIG_SAVED
 ```
 
 {{% /capture %}}
@@ -346,7 +374,7 @@ export KUBECONFIG=$KUBECONFIG_SAVED
 {{% capture whatsnext %}}
 
 * [Organizing Cluster Access Using kubeconfig Files](/docs/concepts/configuration/organize-cluster-access-kubeconfig/)
-* [kubectl config](/docs/reference/generated/kubectl/kubectl-commands/)
+* [kubectl config](/docs/reference/generated/kubectl/kubectl-commands#config)
 
 {{% /capture %}}
 

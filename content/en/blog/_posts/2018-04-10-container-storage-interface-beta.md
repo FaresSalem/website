@@ -24,7 +24,7 @@ With the promotion to beta CSI is now enabled by default on standard Kubernetes 
 The move of the Kubernetes implementation of CSI to beta also means:
 * Kubernetes is compatible with [v0.2](https://github.com/container-storage-interface/spec/releases/tag/v0.2.0) of the CSI spec (instead of [v0.1](https://github.com/container-storage-interface/spec/releases/tag/v0.1.0))
   * There were breaking changes between the CSI spec v0.1 and v0.2, so existing CSI drivers must be updated to be 0.2 compatible before use with Kubernetes 1.10.0+.
-* [Mount propagation](https://kubernetes.io/docs/concepts/storage/volumes/#mount-propagation), a feature that allows bidirectional mounts between containers and host (a requirement for containerized CSI drivers), has also moved to beta.
+* [Mount propagation](/docs/concepts/storage/volumes/#mount-propagation), a feature that allows bidirectional mounts between containers and host (a requirement for containerized CSI drivers), has also moved to beta.
 * The Kubernetes `VolumeAttachment` object, introduced in v1.9 in the storage v1alpha1 group, has been added to the storage v1beta1 group.
 * The Kubernetes `CSIPersistentVolumeSource` object has been promoted to beta.
 A `VolumeAttributes` field was added to Kubernetes `CSIPersistentVolumeSource` object (in alpha this was passed around via annotations).
@@ -37,7 +37,7 @@ A `VolumeAttributes` field was added to Kubernetes `CSIPersistentVolumeSource` o
 
 CSI plugin authors must provide their own instructions for deploying their plugin on Kubernetes.
 
-The Kubernetes-CSI implementation team created a [sample hostpath CSI driver](https://kubernetes-csi.github.io/docs/Example.html). The sample provides a rough idea of what the deployment process for a CSI driver looks like. Production drivers, however, would deploy node components via a DaemonSet and controller components via a StatefulSet rather than a single pod (for example, see the deployment files for the [GCE PD driver](https://github.com/GoogleCloudPlatform/compute-persistent-disk-csi-driver/blob/master/deploy/kubernetes/README.md)).
+The Kubernetes-CSI implementation team created a [sample hostpath CSI driver](https://kubernetes-csi.github.io/docs/example.html). The sample provides a rough idea of what the deployment process for a CSI driver looks like. Production drivers, however, would deploy node components via a DaemonSet and controller components via a StatefulSet rather than a single pod (for example, see the deployment files for the [GCE PD driver](https://github.com/GoogleCloudPlatform/compute-persistent-disk-csi-driver/blob/master/deploy/kubernetes/README.md)).
 
 ## How do I use a CSI Volume in my Kubernetes pod?
 
@@ -161,17 +161,17 @@ As part of the suggested deployment process, the Kubernetes team provides the fo
 * [driver-registrar](https://github.com/kubernetes-csi/driver-registrar)
   * registers the CSI driver with kubelet (in the future) and adds the drivers custom `NodeId` (retrieved via `GetNodeID` call against the CSI endpoint) to an annotation on the Kubernetes Node API Object
 * [livenessprobe](https://github.com/kubernetes-csi/livenessprobe)
-  * can be included in a CSI plugin pod to enable the [Kubernetes Liveness Probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/) mechanism
+  * can be included in a CSI plugin pod to enable the [Kubernetes Liveness Probe](/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/) mechanism
 
 Storage vendors can build Kubernetes deployments for their plugins using these components, while leaving their CSI driver completely unaware of Kubernetes.
 
 ## Where can I find CSI drivers?
 
-CSI drivers are developed and maintained by third parties. You can find a non-definitive list of some [sample and production CSI drivers](https://kubernetes-csi.github.io/docs/Drivers.html).
+CSI drivers are developed and maintained by third parties. You can find a non-definitive list of some [sample and production CSI drivers](https://kubernetes-csi.github.io/docs/drivers.html).
 
 ## What about FlexVolumes?
 
-As mentioned in the [alpha release blog post](https://kubernetes.io/blog/2018/01/introducing-container-storage-interface), [FlexVolume plugin](https://github.com/kubernetes/community/blob/master/contributors/devel/flexvolume.md) was an earlier attempt to make the Kubernetes volume plugin system extensible. Although it enables third party storage vendors to write drivers “out-of-tree”, because it is an exec based API, FlexVolumes requires files for third party driver binaries (or scripts) to be copied to a special plugin directory on the root filesystem of every node (and, in some cases, master) machine. This requires a cluster admin to have write access to the host filesystem for each node and some external mechanism to ensure that the driver file is recreated if deleted, just to deploy a volume plugin.
+As mentioned in the [alpha release blog post](https://kubernetes.io/blog/2018/01/introducing-container-storage-interface), [FlexVolume plugin](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-storage/flexvolume.md) was an earlier attempt to make the Kubernetes volume plugin system extensible. Although it enables third party storage vendors to write drivers “out-of-tree”, because it is an exec based API, FlexVolumes requires files for third party driver binaries (or scripts) to be copied to a special plugin directory on the root filesystem of every node (and, in some cases, master) machine. This requires a cluster admin to have write access to the host filesystem for each node and some external mechanism to ensure that the driver file is recreated if deleted, just to deploy a volume plugin.
 
 In addition to being difficult to deploy, Flex did not address the pain of plugin dependencies: Volume plugins tend to have many external requirements (on mount and filesystem tools, for example). These dependencies are assumed to be available on the underlying host OS, which is often not the case.
 

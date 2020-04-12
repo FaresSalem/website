@@ -13,7 +13,7 @@ With the adoption of microservices, however, new problems emerge due to the shee
 
 **Kubernetes and Services**  
 
-Kubernetes supports a microservices architecture through the [Service](https://kubernetes.io/docs/concepts/services-networking/service/) construct. It allows developers to abstract away the functionality of a set of [Pods](https://kubernetes.io/docs/concepts/workloads/pods/pod/), and expose it to other developers through a well-defined API. It allows adding a name to this level of abstraction and perform rudimentary L4 load balancing. But it doesn’t help with higher-level problems, such as L7 metrics, traffic splitting, rate limiting, circuit breaking, etc.  
+Kubernetes supports a microservices architecture through the [Service](/docs/concepts/services-networking/service/) construct. It allows developers to abstract away the functionality of a set of [Pods](/docs/concepts/workloads/pods/pod/), and expose it to other developers through a well-defined API. It allows adding a name to this level of abstraction and perform rudimentary L4 load balancing. But it doesn’t help with higher-level problems, such as L7 metrics, traffic splitting, rate limiting, circuit breaking, etc.  
 
 [Istio](https://istio.io/), announced last week at GlueCon 2017, addresses these problems in a fundamental way through a service mesh framework. With Istio, developers can implement the core logic for the microservices, and let the framework take care of the rest – traffic management, discovery, service identity and security, and policy enforcement. Better yet, this can be also done for existing microservices without rewriting or recompiling any of their parts. Istio uses [Envoy](https://lyft.github.io/envoy/) as its runtime proxy component and provides an [extensible intermediation layer](https://istio.io/docs/concepts/policy-and-control/mixer.html) which allows global cross-cutting policy enforcement and telemetry collection.  
 
@@ -114,7 +114,7 @@ spec:
 
 
 
-The other two services that we will need to deploy if we want to run the app are **details** and **reviews-v1**. We don’t need to deploy the **ratings** service at this time because v1 of the reviews service doesn’t use it. The remaining services follow essentially the same pattern as **productpage**. The yaml files for all services can be found [here](https://raw.githubusercontent.com/istio/istio/master/samples/apps/bookinfo/bookinfo-v1.yaml).
+The other two services that we will need to deploy if we want to run the app are **details** and **reviews-v1**. We don’t need to deploy the **ratings** service at this time because v1 of the reviews service doesn’t use it. The remaining services follow essentially the same pattern as **productpage**. The yaml files for all services can be found [here](https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo.yaml).
 
 
 
@@ -165,7 +165,7 @@ Notice that this time we use the istioctl kube-inject command to modify bookinfo
 In the Istio service mesh we will not want to access the application **productpage** directly, as we did in plain Kubernetes. Instead, we want an Envoy sidecar in the request path so that we can use Istio’s management features (version routing, circuit breakers, policies, etc.) to control external calls to **productpage** , just like we can for internal requests. Istio’s Ingress controller is used for this purpose.  
 
 
-To use the Istio Ingress controller, we need to create a Kubernetes [Ingress resource](https://raw.githubusercontent.com/istio/istio/master/samples/apps/bookinfo/bookinfo-ingress.yaml) for the app, annotated with kubernetes.io/ingress.class: "istio", like this:
+To use the Istio Ingress controller, we need to create a Kubernetes [Ingress resource](https://raw.githubusercontent.com/istio/istio/master/samples/bookinfo/platform/kube/bookinfo-ingress.yaml) for the app, annotated with kubernetes.io/ingress.class: "istio", like this:
 
 
 

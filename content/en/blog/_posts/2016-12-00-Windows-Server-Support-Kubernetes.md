@@ -4,9 +4,9 @@ date: 2016-12-21
 slug: windows-server-support-kubernetes
 url: /blog/2016/12/Windows-Server-Support-Kubernetes
 ---
-_Editor’s note: this post is part of a [series of in-depth articles](https://kubernetes.io/blog/2016/12/five-days-of-kubernetes-1.5) on what's new in Kubernetes 1.5_  
+_Editor’s note: this post is part of a [series of in-depth articles](https://kubernetes.io/blog/2016/12/five-days-of-kubernetes-1-5/) on what's new in Kubernetes 1.5_
 
-Extending on the theme of giving users choice, [Kubernetes 1.5 release](https://kubernetes.io/blog/2016/12/kubernetes-1.5-supporting-production-workloads) includes the support for Windows Servers. WIth more than [80%](http://www.gartner.com/document/3446217) of enterprise apps running Java on Linux or .Net on Windows, Kubernetes is previewing capabilities that extends its reach to the mass majority of enterprise workloads.&nbsp;  
+Extending on the theme of giving users choice, [Kubernetes 1.5 release](https://kubernetes.io/blog/2016/12/kubernetes-1-5-supporting-production-workloads/) includes the support for Windows Servers. WIth more than [80%](http://www.gartner.com/document/3446217) of enterprise apps running Java on Linux or .Net on Windows, Kubernetes is previewing capabilities that extends its reach to the mass majority of enterprise workloads.&nbsp;
 
 The new Kubernetes Windows Server 2016 and Windows Container support includes public preview with the following features:  
 
@@ -64,7 +64,7 @@ Support for Windows Server-based containers is in alpha release mode for Kuberne
 - **Runtime Operations** - the SIG will play a key part in defining the monitoring interface of the Container Runtime Interface (CRI), leveraging it to provide deep insight and monitoring for Windows Server-based containers
 **Get Started**  
 
-To get started with Kubernetes on Windows Server 2016, please visit the [GitHub guide](http://kubernetes.io/docs/getting-started-guides/windows/) for more details.  
+To get started with Kubernetes on Windows Server 2016, please visit the [GitHub guide](/docs/getting-started-guides/windows/) for more details.  
 If you want to help with Windows Server support, then please connect with the [Windows Server SIG](https://github.com/kubernetes/community/blob/master/sig-windows/README.md) or connect directly with Michael Michael, the SIG lead, on [GitHub](https://github.com/michmike).&nbsp;  
 
 _--[Michael Michael](https://twitter.com/michmike77), Senior Director of Product Management, Apprenda&nbsp;_  

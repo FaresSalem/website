@@ -6,9 +6,9 @@ weight: 40
 
 {{% capture overview %}}
 
-This page shows how to assign extended resources to a Container.
-
 {{< feature-state state="stable" >}}
+
+This page shows how to assign extended resources to a Container.
 
 {{% /capture %}}
 
@@ -43,7 +43,7 @@ In the configuration file, you can see that the Container requests 3 dongles.
 Create a Pod:
 
 ```shell
-kubectl create -f https://k8s.io/examples/pods/resource/extended-resource-pod.yaml
+kubectl apply -f https://k8s.io/examples/pods/resource/extended-resource-pod.yaml
 ```
 
 Verify that the Pod is running:
@@ -80,7 +80,7 @@ used three of the four available dongles.
 Attempt to create a Pod:
 
 ```shell
-kubectl create -f https://k8s.io/examples/pods/resource/extended-resource-pod-2.yaml
+kubectl apply -f https://k8s.io/examples/pods/resource/extended-resource-pod-2.yaml
 ```
 
 Describe the Pod
@@ -141,9 +141,3 @@ kubectl delete pod extended-resource-demo-2
 * [Advertise Extended Resources for a Node](/docs/tasks/administer-cluster/extended-resource-node/)
 
 {{% /capture %}}
-
-
-
-
-
-

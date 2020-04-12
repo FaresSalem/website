@@ -72,9 +72,9 @@ Cri-containerd v1.0.0-alpha.0 was released on Sep. 25, 2017.
 
 It is feature complete. All Kubernetes features are supported.  
 
-All [CRI validation test](https://github.com/kubernetes/community/blob/master/contributors/devel/cri-validation.md)s have passed. (A CRI validation is a test framework for validating whether a CRI implementation meets all the requirements expected by Kubernetes.)  
+All [CRI validation tests](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/cri-validation.md) have passed. (A CRI validation is a test framework for validating whether a CRI implementation meets all the requirements expected by Kubernetes.)  
 
-All regular [node e2e test](https://github.com/kubernetes/community/blob/master/contributors/devel/e2e-node-tests.md)s have passed. (The Kubernetes test framework for testing Kubernetes node level functionalities such as managing pods, mounting volumes etc.)  
+All regular [node e2e tests](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-testing/e2e-tests.md) have passed. (The Kubernetes test framework for testing Kubernetes node level functionalities such as managing pods, mounting volumes etc.)  
 
 To learn more about the v1.0.0-alpha.0 release, see the [project repository](https://github.com/kubernetes-incubator/cri-containerd/releases/tag/v1.0.0-alpha.0).
 
@@ -107,7 +107,7 @@ We are focused on stability and usability improvements as our next steps.
 - Usability:
 
   - Improve the user experience of [_crictl_](https://github.com/kubernetes-incubator/cri-tools/blob/master/docs/crictl.md). Crictl is a portable command line tool for all CRI container runtimes. The goal here is to make it easy to use for debug and development scenarios.
-  - Integrate cri-containerd with [_kube-up.sh_](https://kubernetes.io/docs/getting-started-guides/gce/), to help users bring up a production quality Kubernetes cluster using cri-containerd and containerd.
+  - Integrate cri-containerd with [_kube-up.sh_](/docs/getting-started-guides/gce/), to help users bring up a production quality Kubernetes cluster using cri-containerd and containerd.
   - Improve our documentation for users and admins alike.
 
 We plan to release our v1.0.0-beta.0 by the end of 2017.

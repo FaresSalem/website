@@ -4,7 +4,7 @@ date: 2017-07-28
 slug: happy-second-birthday-kubernetes
 url: /blog/2017/07/Happy-Second-Birthday-Kubernetes
 ---
-As we do every July, we’re excited to celebrate Kubernetes 2nd birthday! In the two years since GA 1.0 launched as an open source project, [Kubernetes](http://kubernetes.io/docs/whatisk8s/) (abbreviated as K8s) has grown to become the highest velocity cloud-related project. With more than 2,611 diverse contributors, from independents to leading global companies, the project has had 50,685 commits in the last 12 months. Of the 54 million projects on GitHub, Kubernetes is in the top 5 for number of unique developers contributing code. It also has [more pull requests and issue comments](https://www.cncf.io/blog/2017/02/27/measuring-popularity-kubernetes-using-bigquery/) than any other project on GitHub. &nbsp;
+As we do every July, we’re excited to celebrate Kubernetes 2nd birthday! In the two years since GA 1.0 launched as an open source project, [Kubernetes](/docs/whatisk8s/) (abbreviated as K8s) has grown to become the highest velocity cloud-related project. With more than 2,611 diverse contributors, from independents to leading global companies, the project has had 50,685 commits in the last 12 months. Of the 54 million projects on GitHub, Kubernetes is in the top 5 for number of unique developers contributing code. It also has [more pull requests and issue comments](https://www.cncf.io/blog/2017/02/27/measuring-popularity-kubernetes-using-bigquery/) than any other project on GitHub. &nbsp;
 
  ![Screen Shot 2017-07-18 at 9.39.42 AM.png](https://lh3.googleusercontent.com/ldb4PfuqammWmcPiFpMa48ALxD0kGrSre0WGMpuXKqAqnKhyWEmIcJXnQcAK2sdVCiE5cvw0H2FXtLt_dVihAk4b-XTA2HIQba3A0irnRaIHup4bhFUwPLSSFmw3zFk9ZOt61TKc)
 
@@ -29,14 +29,14 @@ July 2016
 -
 Kubernauts celebrated its [first anniversary](https://kubernetes.io/blog/2016/07/happy-k8sbday-1) of the Kubernetes 1.0 launch with 20 [#k8sbday](https://twitter.com/search?q=k8sbday&src=typd) parties hosted worldwide
 -
-Kubernetes [v1.3 release](https://kubernetes.io/blog/2016/07/kubernetes-1.3-bridging-cloud-native-and-enterprise-workloads)
+Kubernetes [v1.3 release](https://kubernetes.io/blog/2016/07/kubernetes-1-3-bridging-cloud-native-and-enterprise-workloads/)
 
 
 
 September 2016
 
 -
-Kubernetes [v1.4 release](https://kubernetes.io/blog/2016/09/kubernetes-1.4-making-it-easy-to-run-on-kuberentes-anywhere)
+Kubernetes [v1.4 release](https://kubernetes.io/blog/2016/09/kubernetes-1-4-making-it-easy-to-run-on-kuberentes-anywhere/)
 -
 Launch of [kubeadm](https://kubernetes.io/blog/2016/09/how-we-made-kubernetes-easy-to-install), a tool that makes Kubernetes dramatically easier to install
 -
@@ -63,7 +63,7 @@ Cloud Native Computing Foundation partners with The Linux Foundation to launch a
 December 2016
 
 -
-Kubernetes [v1.5 release](https://kubernetes.io/blog/2016/12/kubernetes-1.5-supporting-production-workloads)
+Kubernetes [v1.5 release](https://kubernetes.io/blog/2016/12/kubernetes-1-5-supporting-production-workloads/)
 
 
 
@@ -79,7 +79,7 @@ March 2017
 -
 CloudNativeCon/KubeCon [Europe](https://www.cncf.io/blog/2017/04/17/highlights-cloudnativecon-kubecon-europe-2017/)
 -
-Kubernetes[v1.6 release](https://kubernetes.io/blog/2017/03/kubernetes-1.6-multi-user-multi-workloads-at-scale)
+Kubernetes[v1.6 release](https://kubernetes.io/blog/2017/03/kubernetes-1-6-multi-user-multi-workloads-at-scale)
 
 
 
@@ -102,7 +102,7 @@ Stutterstock and Kubernetes appear in [The Wall Street Journal](https://blogs.ws
 June 2017
 
 -
-Kubernetes [v1.7 release](https://kubernetes.io/blog/2017/06/kubernetes-1.7-security-hardening-stateful-application-extensibility-updates)
+Kubernetes [v1.7 release](https://kubernetes.io/blog/2017/06/kubernetes-1-7-security-hardening-stateful-application-extensibility-updates)
 -
 [Survey](https://www.cncf.io/blog/2017/06/28/survey-shows-kubernetes-leading-orchestration-platform/) from CloudNativeCon + KubeCon Europe shows Kubernetes leading as the orchestration platform of choice
 -

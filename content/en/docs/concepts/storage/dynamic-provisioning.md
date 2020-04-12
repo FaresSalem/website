@@ -21,7 +21,6 @@ automatically provisions storage when it is requested by users.
 
 {{% /capture %}}
 
-{{< toc >}}
 
 {{% capture body %}}
 
@@ -39,7 +38,7 @@ about the complexity and nuances of how storage is provisioned, but still
 have the ability to select from multiple storage options.
 
 More information on storage classes can be found
-[here](/docs/concepts/storage/persistent-volumes/#storageclasses).
+[here](/docs/concepts/storage/storage-classes/).
 
 ## Enabling Dynamic Provisioning
 
@@ -47,6 +46,9 @@ To enable dynamic provisioning, a cluster administrator needs to pre-create
 one or more StorageClass objects for users.
 StorageClass objects define which provisioner should be used and what parameters
 should be passed to that provisioner when dynamic provisioning is invoked.
+The name of a StorageClass object must be a valid
+[DNS subdomain name](/docs/concepts/overview/working-with-objects/names#dns-subdomain-names).
+
 The following manifest creates a storage class "slow" which provisions standard
 disk-like persistent disks.
 
@@ -124,6 +126,11 @@ Note that there can be at most one *default* storage class on a cluster, or
 a `PersistentVolumeClaim` without `storageClassName` explicitly specified cannot
 be created.
 
+## Topology Awareness
+
+In [Multi-Zone](/docs/setup/multiple-zones) clusters, Pods can be spread across
+Zones in a Region. Single-Zone storage backends should be provisioned in the Zones where
+Pods are scheduled. This can be accomplished by setting the [Volume Binding
+Mode](/docs/concepts/storage/storage-classes/#volume-binding-mode).
+
 {{% /capture %}}
-
-

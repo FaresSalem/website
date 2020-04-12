@@ -18,7 +18,7 @@ them using [Kibana](https://www.elastic.co/products/kibana), as an alternative t
 Stackdriver Logging when running on GCE. 
 
 {{< note >}}
-**Note:** You cannot automatically deploy Elasticsearch and Kibana in the Kubernetes cluster hosted on Google Kubernetes Engine. You have to deploy them manually.
+You cannot automatically deploy Elasticsearch and Kibana in the Kubernetes cluster hosted on Google Kubernetes Engine. You have to deploy them manually.
 {{< /note >}}
 
 {{% /capture %}}
@@ -39,7 +39,9 @@ Now, when you create a cluster, a message will indicate that the Fluentd log
 collection daemons that run on each node will target Elasticsearch:
 
 ```shell
-$ cluster/kube-up.sh
+cluster/kube-up.sh
+```
+```
 ...
 Project: kubernetes-satnam
 Zone: us-central1-b
@@ -63,7 +65,9 @@ all be running in the kube-system namespace soon after the cluster comes to
 life.
 
 ```shell
-$ kubectl get pods --namespace=kube-system
+kubectl get pods --namespace=kube-system
+```
+```
 NAME                                           READY     STATUS    RESTARTS   AGE
 elasticsearch-logging-v1-78nog                 1/1       Running   0          2h
 elasticsearch-logging-v1-nj2nb                 1/1       Running   0          2h

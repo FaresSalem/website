@@ -5,7 +5,7 @@ slug: cross-cluster-services
 url: /blog/2016/07/Cross-Cluster-Services
 ---
 
-_Editor’s note: this post is part of a [series of in-depth articles](https://kubernetes.io/blog/2016/07/five-days-of-kubernetes-1.3) on what's new in Kubernetes 1.3_    
+_Editor’s note: this post is part of a [series of in-depth articles](https://kubernetes.io/blog/2016/07/five-days-of-kubernetes-1-3) on what's new in Kubernetes 1.3_
 
 As Kubernetes users scale their production deployments we’ve heard a clear desire to deploy services across zone, region, cluster and cloud boundaries. Services that span clusters provide geographic distribution, enable hybrid and multi-cloud scenarios and improve the level of high availability beyond single cluster multi-zone deployments. Customers who want their services to span one or more (possibly remote) clusters, need them to be reachable in a consistent manner from both within and outside their clusters.  
 
@@ -328,7 +328,7 @@ Standard Kubernetes service cluster-IP's already ensure that non-responsive indi
 
 We'd love to hear feedback on Kubernetes Cross Cluster Services. To join the community:
 
-- Post issues or feature requests on [GitHub](https://github.com/kubernetes/kubernetes/tree/master/federation)
+- Post issues or feature requests on [GitHub](https://github.com/kubernetes/kubernetes/tree/release-1.8/federation)
 - Join us in the #federation channel on [Slack](https://kubernetes.slack.com/messages/sig-federation)
 - Participate in the [Cluster Federation SIG](https://groups.google.com/forum/#!forum/kubernetes-sig-federation)
 

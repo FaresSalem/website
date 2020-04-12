@@ -4,7 +4,6 @@ content_template: templates/concept
 weight: 40
 ---
 
-{{< toc >}}
 
 {{% capture overview %}}
 
@@ -33,7 +32,7 @@ weight: 10
 
 
 {{% note %}}
-**Note:** For page weights, it can be smart not to use 1, 2, 3 ..., but some other interval, say 10, 20, 30... This allows you to insert pages where you want later.
+For page weights, it can be smart not to use 1, 2, 3 ..., but some other interval, say 10, 20, 30... This allows you to insert pages where you want later.
 {{% /note %}}
 
 
@@ -57,12 +56,12 @@ linkTitle: Title used in links
 
 
 {{% note %}}
-**Note:** The above needs to be done per language. If you don't see your section in the menu, it is probably because it is not identified as a section by Hugo. Create a `_index.md` content file in the section folder.
+The above needs to be done per language. If you don't see your section in the menu, it is probably because it is not identified as a section by Hugo. Create a `_index.md` content file in the section folder.
 {{% /note %}}
 
 ### Documentation Side Menu
 
-The documentation side-bar menu is built from the _current section tree_ starting below `docs/`. 
+The documentation side-bar menu is built from the _current section tree_ starting below `docs/`.
 
 It will show all sections and their pages.
 
@@ -86,7 +85,7 @@ toc_hide: true
 
 ### The Main Menu
 
-The site links in the top-right menu -- and also in the footer -- are built by page-lookups. This is to make sure that the page actually exists. So, if the `case-studies` section does not exist in a site (language), it will not be linked to. 
+The site links in the top-right menu -- and also in the footer -- are built by page-lookups. This is to make sure that the page actually exists. So, if the `case-studies` section does not exist in a site (language), it will not be linked to.
 
 
 ## Page Bundles
@@ -108,8 +107,6 @@ Another widely used example is the `includes` bundle. It sets `headless: true` i
 ```bash
 en/includes
 ├── default-storage-class-prereqs.md
-├── federated-task-tutorial-prereqs.md
-├── federation-content-moved.md
 ├── index.md
 ├── partner-script.js
 ├── partner-style.css
@@ -127,14 +124,14 @@ Some important notes to the files in the bundles:
 
 ## Styles
 
-The `SASS` source of the stylesheets for this site is stored below `src/sass` and can be built with `make sass` (note that Hugo will get `SASS` support soon, see https://github.com/gohugoio/hugo/issues/4243).
+The [SASS](https://sass-lang.com/) source of the stylesheets for this site is stored in `assets/sass` and is automatically built by Hugo.
 
 {{% /capture %}}
 
 {{% capture whatsnext %}}
 
-* [Custom Hugo shortcodes](/docs/contribute/style/hugo-shortcodes/)
-* [Style guide](/docs/contribute/style/style-guide)
+* Learn about [custom Hugo shortcodes](/docs/contribute/style/hugo-shortcodes/)
+* Learn about the [Style guide](/docs/contribute/style/style-guide)
+* Learn about the [Content guide](/docs/contribute/style/content-guide)
 
 {{% /capture %}}
-

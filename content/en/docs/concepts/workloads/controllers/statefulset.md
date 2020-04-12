@@ -15,10 +15,6 @@ weight: 40
 
 StatefulSet is the workload API object used to manage stateful applications.
 
-{{< note >}}
-**Note:** StatefulSets are stable (GA) in 1.9.
-{{< /note >}}
-
 {{< glossary_definition term_id="statefulset" length="all" >}}
 {{% /capture %}}
 
@@ -32,29 +28,29 @@ following.
 * Stable, unique network identifiers.
 * Stable, persistent storage.
 * Ordered, graceful deployment and scaling.
-* Ordered, graceful deletion and termination.
 * Ordered, automated rolling updates.
 
 In the above, stable is synonymous with persistence across Pod (re)scheduling.
 If an application doesn't require any stable identifiers or ordered deployment,
-deletion, or scaling, you should deploy your application with a controller that
-provides a set of stateless replicas. Controllers such as
+deletion, or scaling, you should deploy your application using a workload object
+that provides a set of stateless replicas.
 [Deployment](/docs/concepts/workloads/controllers/deployment/) or
 [ReplicaSet](/docs/concepts/workloads/controllers/replicaset/) may be better suited to your stateless needs.
 
 ## Limitations
 
-* StatefulSet was a beta resource prior to 1.9 and not available in any Kubernetes release prior to 1.5.
 * The storage for a given Pod must either be provisioned by a [PersistentVolume Provisioner](https://github.com/kubernetes/examples/tree/{{< param "githubbranch" >}}/staging/persistent-volume-provisioning/README.md) based on the requested `storage class`, or pre-provisioned by an admin.
 * Deleting and/or scaling a StatefulSet down will *not* delete the volumes associated with the StatefulSet. This is done to ensure data safety, which is generally more valuable than an automatic purge of all related StatefulSet resources.
 * StatefulSets currently require a [Headless Service](/docs/concepts/services-networking/service/#headless-services) to be responsible for the network identity of the Pods. You are responsible for creating this Service.
+* StatefulSets do not provide any guarantees on the termination of pods when a StatefulSet is deleted. To achieve ordered and graceful termination of the pods in the StatefulSet, it is possible to scale the StatefulSet down to 0 prior to deletion.
+* When using [Rolling Updates](#rolling-updates) with the default
+  [Pod Management Policy](#pod-management-policies) (`OrderedReady`),
+  it's possible to get into a broken state that requires
+  [manual intervention to repair](#forced-rollback).
 
 ## Components
-The example below demonstrates the components of a StatefulSet.
 
-* A Headless Service, named nginx, is used to control the network domain.
-* The StatefulSet, named web, has a Spec that indicates that 3 replicas of the nginx container will be launched in unique Pods.
-* The volumeClaimTemplates will provide stable storage using [PersistentVolumes](/docs/concepts/storage/persistent-volumes/) provisioned by a PersistentVolume Provisioner.
+The example below demonstrates the components of a StatefulSet.
 
 ```yaml
 apiVersion: v1
@@ -107,10 +103,21 @@ spec:
           storage: 1Gi
 ```
 
+In the above example:
+
+* A Headless Service, named `nginx`, is used to control the network domain.
+* The StatefulSet, named `web`, has a Spec that indicates that 3 replicas of the nginx container will be launched in unique Pods.
+* The `volumeClaimTemplates` will provide stable storage using [PersistentVolumes](/docs/concepts/storage/persistent-volumes/) provisioned by a PersistentVolume Provisioner.
+
+The name of a StatefulSet object must be a valid
+[DNS subdomain name](/docs/concepts/overview/working-with-objects/names#dns-subdomain-names).
+
 ## Pod Selector
+
 You must set the `.spec.selector` field of a StatefulSet to match the labels of its `.spec.template.metadata.labels`. Prior to Kubernetes 1.8, the `.spec.selector` field was defaulted when omitted. In 1.8 and later versions, failing to specify a matching Pod Selector will result in a validation error during StatefulSet creation.
 
 ## Pod Identity
+
 StatefulSet Pods have a unique identity that is comprised of an ordinal, a
 stable network identity, and stable storage. The identity sticks to the Pod,
 regardless of which node it's (re)scheduled on.
@@ -134,6 +141,10 @@ As each Pod is created, it gets a matching DNS subdomain, taking the form:
 `$(podname).$(governing service domain)`, where the governing service is defined
 by the `serviceName` field on the StatefulSet.
 
+As mentioned in the [limitations](#limitations) section, you are responsible for
+creating the [Headless Service](/docs/concepts/services-networking/service/#headless-services)
+responsible for the network identity of the pods.
+
 Here are some examples of choices for Cluster Domain, Service name,
 StatefulSet name, and how that affects the DNS names for the StatefulSet's Pods.
 
@@ -144,7 +155,7 @@ Cluster Domain | Service (ns/name) | StatefulSet (ns/name)  | StatefulSet Domain
  kube.local    | foo/nginx         | foo/web           | nginx.foo.svc.kube.local        | web-{0..N-1}.nginx.foo.svc.kube.local        | web-{0..N-1} |
 
 {{< note >}}
-**Note:** Cluster Domain will be set to `cluster.local` unless
+Cluster Domain will be set to `cluster.local` unless
 [otherwise configured](/docs/concepts/services-networking/dns-pod-service/#how-it-works).
 {{< /note >}}
 
@@ -161,8 +172,9 @@ This must be done manually.
 
 ### Pod Name Label
 
-When the StatefulSet controller creates a Pod, it adds a label, `statefulset.kubernetes.io/pod-name`, 
-that is set to the name of the Pod. This label allows you to attach a Service to a specific Pod in 
+When the StatefulSet {{< glossary_tooltip term_id="controller" >}} creates a Pod,
+it adds a label, `statefulset.kubernetes.io/pod-name`, that is set to the name of
+the Pod. This label allows you to attach a Service to a specific Pod in
 the StatefulSet.
 
 ## Deployment and Scaling Guarantees
@@ -201,7 +213,8 @@ described [above](#deployment-and-scaling-guarantees).
 `Parallel` pod management tells the StatefulSet controller to launch or
 terminate all Pods in parallel, and to not wait for Pods to become Running
 and Ready or completely terminated prior to launching or terminating another
-Pod.
+Pod. This option only affects the behavior for scaling operations. Updates are not
+affected.
 
 ## Update Strategies
 
@@ -237,11 +250,32 @@ updates to its `.spec.template` will not be propagated to its Pods.
 In most cases you will not need to use a partition, but they are useful if you want to stage an
 update, roll out a canary, or perform a phased roll out.
 
+#### Forced Rollback
+
+When using [Rolling Updates](#rolling-updates) with the default
+[Pod Management Policy](#pod-management-policies) (`OrderedReady`),
+it's possible to get into a broken state that requires manual intervention to repair.
+
+If you update the Pod template to a configuration that never becomes Running and
+Ready (for example, due to a bad binary or application-level configuration error),
+StatefulSet will stop the rollout and wait.
+
+In this state, it's not enough to revert the Pod template to a good configuration.
+Due to a [known issue](https://github.com/kubernetes/kubernetes/issues/67250),
+StatefulSet will continue to wait for the broken Pod to become Ready
+(which never happens) before it will attempt to revert it back to the working
+configuration.
+
+After reverting the template, you must also delete any Pods that StatefulSet had
+already attempted to run with the bad configuration.
+StatefulSet will then begin to recreate the Pods using the reverted template.
+
 {{% /capture %}}
 {{% capture whatsnext %}}
 
 * Follow an example of [deploying a stateful application](/docs/tutorials/stateful-application/basic-stateful-set/).
 * Follow an example of [deploying Cassandra with Stateful Sets](/docs/tutorials/stateful-application/cassandra/).
+* Follow an example of [running a replicated stateful application](/docs/tasks/run-application/run-replicated-stateful-application/).
 
 {{% /capture %}}
 

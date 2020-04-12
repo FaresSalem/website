@@ -55,7 +55,7 @@ memory request, both equal to 200 MiB. The Container has a CPU limit and a CPU r
 Create the Pod:
 
 ```shell
-kubectl create -f https://k8s.io/examples/pods/qos/qos-pod.yaml --namespace=qos-example
+kubectl apply -f https://k8s.io/examples/pods/qos/qos-pod.yaml --namespace=qos-example
 ```
 
 View detailed information about the Pod:
@@ -84,7 +84,7 @@ spec:
 ```
 
 {{< note >}}
-**Note:** If a Container specifies its own memory limit, but does not specify a memory request, Kubernetes
+If a Container specifies its own memory limit, but does not specify a memory request, Kubernetes
 automatically assigns a memory request that matches the limit. Similarly, if a Container specifies its own
 CPU limit, but does not specify a CPU request, Kubernetes automatically assigns a CPU request that matches
 the limit.
@@ -111,7 +111,7 @@ and a memory request of 100 MiB.
 Create the Pod:
 
 ```shell
-kubectl create -f https://k8s.io/examples/pods/qos/qos-pod-2.yaml --namespace=qos-example
+kubectl apply -f https://k8s.io/examples/pods/qos/qos-pod-2.yaml --namespace=qos-example
 ```
 
 View detailed information about the Pod:
@@ -156,7 +156,7 @@ limits or requests:
 Create the Pod:
 
 ```shell
-kubectl create -f https://k8s.io/examples/pods/qos/qos-pod-3.yaml --namespace=qos-example
+kubectl apply -f https://k8s.io/examples/pods/qos/qos-pod-3.yaml --namespace=qos-example
 ```
 
 View detailed information about the Pod:
@@ -195,7 +195,7 @@ criteria for QoS class Guaranteed, and one of its Containers has a memory reques
 Create the Pod:
 
 ```shell
-kubectl create -f https://k8s.io/examples/pods/qos/qos-pod-4.yaml --namespace=qos-example
+kubectl apply -f https://k8s.io/examples/pods/qos/qos-pod-4.yaml --namespace=qos-example
 ```
 
 View detailed information about the Pod:
@@ -261,8 +261,9 @@ kubectl delete namespace qos-example
 * [Configure a Pod Quota for a Namespace](/docs/tasks/administer-cluster/quota-pod-namespace/)
 
 * [Configure Quotas for API Objects](/docs/tasks/administer-cluster/quota-api-object/)
-{{% /capture %}}
 
+* [Control Topology Management policies on a node](/docs/tasks/administer-cluster/topology-manager/)
+{{% /capture %}}
 
 
 

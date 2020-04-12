@@ -7,6 +7,9 @@ weight: 20
 ---
 
 {{% capture overview %}}
+
+{{< feature-state for_k8s_version="v1.18" state="stable" >}}
+
 Bootstrap tokens are a simple bearer token that is meant to be used when
 creating new clusters or joining new nodes to an existing cluster.  It was built
 to support [kubeadm](/docs/reference/setup-tools/kubeadm/kubeadm/), but can be used in other contexts
@@ -25,8 +28,6 @@ API Server.  Expired tokens are removed with the TokenCleaner controller in the
 Controller Manager.  The tokens are also used to create a signature for a
 specific ConfigMap used in a "discovery" process through a BootstrapSigner
 controller.
-
-{{< feature-state state="beta" >}}
 
 ## Token Format
 
@@ -115,7 +116,7 @@ authenticate to the API server as a bearer token.
 `cluster-info` ConfigMap as described below.
 
 The `expiration` field controls the expiry of the token.  Expired tokens are
-rejected when used for authentication and ignored during ConfigMap signing. 
+rejected when used for authentication and ignored during ConfigMap signing.
 The expiry value is encoded as an absolute UTC time using RFC3339.  Enable the
 `tokencleaner` controller to automatically delete expired tokens.
 
@@ -179,12 +180,12 @@ verify the JWS using the `HS256` scheme (HMAC-SHA256) with the full token (e.g.
 is used.
 
 {{< warning >}}
-**Warning:** Any party with a bootstrapping token can create a valid signature for that
+Any party with a bootstrapping token can create a valid signature for that
 token. When using ConfigMap signing it's discouraged to share the same token with
 many clients, since a compromised client can potentially man-in-the middle another
 client relying on the signature to bootstrap TLS trust.
 {{< /warning >}}
 
-Consult the [kubeadm security model](/docs/reference/generated/kubeadm/#security-model)
+Consult the [kubeadm implementation details](/docs/reference/setup-tools/kubeadm/implementation-details/)
 section for more information.
 {{% /capture %}}

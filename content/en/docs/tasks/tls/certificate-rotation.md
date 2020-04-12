@@ -10,11 +10,11 @@ content_template: templates/task
 This page shows how to enable and configure certificate rotation for the kubelet.
 {{% /capture %}}
 
+{{< feature-state for_k8s_version="v1.8" state="beta" >}}
+
 {{% capture prerequisites %}}
 
 * Kubernetes version 1.8.0 or later is required
-
-* Kubelet certificate rotation is beta in 1.8.0 which means it may change without notice.
 
 {{% /capture %}}
 
@@ -27,7 +27,7 @@ default, these certificates are issued with one year expiration so that they do
 not need to be renewed too frequently.
 
 Kubernetes 1.8 contains [kubelet certificate
-rotation](/docs/tasks/administer-cluster/certificate-rotation/), a beta feature
+rotation](/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/), a beta feature
 that will automatically generate a new key and request a new certificate from
 the Kubernetes API as the current certificate approaches expiration. Once the
 new certificate is available, it will be used for authenticating connections to

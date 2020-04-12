@@ -3,7 +3,7 @@ reviewers:
 - dchen1107
 - roberthbailey
 - liggitt
-title: Master-Node communication
+title: Master-Node Communication
 content_template: templates/concept
 weight: 20
 ---
@@ -18,7 +18,6 @@ cloud provider).
 
 {{% /capture %}}
 
-{{< toc >}}
 
 {{% capture body %}}
 
@@ -67,9 +66,9 @@ The connections from the apiserver to the kubelet are used for:
 
   * Fetching logs for pods.
   * Attaching (through kubectl) to running pods.
-  * Providing the kubelet's port-forwarding functionality. 
+  * Providing the kubelet's port-forwarding functionality.
 
-These connections terminate at the kubelet's HTTPS endpoint. By default, 
+These connections terminate at the kubelet's HTTPS endpoint. By default,
 the apiserver does not verify the kubelet's serving certificate,
 which makes the connection subject to man-in-the-middle attacks, and
 **unsafe** to run over untrusted and/or public networks.
@@ -95,5 +94,31 @@ provided by the HTTPS endpoint nor provide client credentials so while the
 connection will be encrypted, it will not provide any guarantees of integrity.
 These connections **are not currently safe** to run over untrusted and/or
 public networks.
+
+### SSH Tunnels
+
+Kubernetes supports SSH tunnels to protect the Master → Cluster communication
+paths. In this configuration, the apiserver initiates an SSH tunnel to each node
+in the cluster (connecting to the ssh server listening on port 22) and passes
+all traffic destined for a kubelet, node, pod, or service through the tunnel.
+This tunnel ensures that the traffic is not exposed outside of the network in
+which the nodes are running.
+
+SSH tunnels are currently deprecated so you shouldn't opt to use them unless you
+know what you are doing. The Konnectivity service is a replacement for this
+communication channel.
+
+### Konnectivity service
+{{< feature-state for_k8s_version="v1.18" state="beta" >}}
+
+As a replacement to the SSH tunnels, the Konnectivity service provides TCP
+level proxy for the Master → Cluster communication. The Konnectivity consists of
+two parts, the Konnectivity server and the Konnectivity agents, running in the
+Master network and the Cluster network respectively. The Konnectivity agents
+initiate connections to the Konnectivity server and maintain the connections.
+All Master → Cluster traffic then goes through these connections.
+
+See [Konnectivity Service Setup](/docs/tasks/setup-konnectivity/) on how to set
+it up in your cluster.
 
 {{% /capture %}}
